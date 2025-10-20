@@ -1,251 +1,475 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>СУСЕКИ СТАРЫЙ ТЕЛЕВИЗОР</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    body { font-family:'Segoe UI',Arial,sans-serif;margin:0;background:#181a20;color:#eee; }
-    #container { max-width:430px;margin:0 auto;padding:10px 5px 15px 5px;}
-    #canvas { width:100%;max-width:400px;height:auto;display:block;margin:0 auto 14px auto;
-      border-radius:13px;box-shadow:0 2px 24px #0006; border:1.5px solid #282828; background:#232733;}
-    .controls{background:#22252e;border-radius:19px;padding:13px 9px 15px 9px;box-shadow:0 0 10px #1a1e2c23,0 1px 1px #1c1c2dc0;
-      margin-bottom:10px;overflow-x:auto;max-width:430px;}
-    label { font-size:0.99em;display:flex;align-items:center;justify-content:space-between;margin:9px 0 4px 0;}
-    input[type="range"] { flex-basis:62%;accent-color:#41a6e3;margin-left:15px;height:30px;background:transparent;}
-    input[type="file"]{display:block;margin:0 auto 12px auto;padding:6px;font-size:1em;
-      background:#202430;color:#eee;border:1px solid #31356d;border-radius:8px;width:100%;box-sizing:border-box;}
-    button { width:98%;max-width:420px;display:block;margin:16px auto 0 auto;padding:13px;
-      font-size:1.07em;font-weight:600;background:linear-gradient(95deg,#2a53ff 0%,#40c3ff 100%);
-      border:none;color:#fff;border-radius:15px;transition:background 0.16s;box-shadow:0 2px 10px #19222b66; cursor:pointer;}
-    button:active,button:focus{background:linear-gradient(95deg,#1e3685 0%,#41b6e3 100%);}
-    @media(max-width:510px){#container,.controls{max-width:99vw;padding:6px 2vw;}#canvas{max-width:98vw;}}
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      margin: 0;
+      background: #181a20;
+      color: #eee;
+    }
+    #container {
+      max-width: 430px;
+      margin: 0 auto;
+      padding: 10px 5px 15px 5px;
+    }
+    #canvas {
+      width: 100%;
+      max-width: 400px;
+      height: auto;
+      display: block;
+      margin: 0 auto 14px auto;
+      border-radius: 13px;
+      box-shadow: 0 2px 24px #0006;
+      border: 1.5px solid #282828;
+      background: #232733;
+    }
+    .controls {
+      background: #22252e;
+      border-radius: 19px;
+      padding: 13px 9px 15px 9px;
+      box-shadow: 0 0 10px #1a1e2c23, 0 1px 1px #1c1c2dc0;
+      margin-bottom: 10px;
+      overflow-x: auto;
+      max-width: 430px;
+    }
+    label {
+      font-size: 0.99em;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 9px 0 4px 0;
+    }
+    input[type="range"] {
+      flex-basis: 62%;
+      accent-color: #41a6e3;
+      margin-left: 15px;
+      height: 30px;
+      background: transparent;
+    }
+    input[type="file"] {
+      display: block;
+      margin: 0 auto 12px auto;
+      padding: 6px;
+      font-size: 1em;
+      background: #202430;
+      color: #eee;
+      border: 1px solid #31356d;
+      border-radius: 8px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    button {
+      width: 98%;
+      max-width: 420px;
+      display: block;
+      margin: 16px auto 0 auto;
+      padding: 13px;
+      font-size: 1.07em;
+      font-weight: 600;
+      background: linear-gradient(95deg, #2a53ff 0%, #40c3ff 100%);
+      border: none;
+      color: #fff;
+      border-radius: 15px;
+      transition: background 0.16s;
+      box-shadow: 0 2px 10px #19222b66;
+      cursor: pointer;
+    }
+    button:active,
+    button:focus {
+      background: linear-gradient(95deg, #1e3685 0%, #41b6e3 100%);
+    }
+    #sendBtn {
+      background: linear-gradient(95deg, #28a745, #3ecf68);
+      margin-top: 10px;
+    }
+    @media (max-width: 510px) {
+      #container,
+      .controls {
+        max-width: 99vw;
+        padding: 6px 2vw;
+      }
+      #canvas {
+        max-width: 98vw;
+      }
+    }
   </style>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
   <div id="container">
-    <h2 style="text-align:center;letter-spacing:2px;font-weight:700;">CRT TV Эффекты</h2>
-    <input type="file" accept="image/*" id="upload">
+    <h2 style="text-align:center;letter-spacing:2px;font-weight:700;">
+      CRT TV Эффекты
+    </h2>
+    <input type="file" accept="image/*" id="upload" />
     <canvas id="canvas" width="400" height="300"></canvas>
     <div class="controls" id="ctrls">
-      <!-- Ползунки управления эффектами -->
-      <label>Статический шум
-        <input type="range" id="noiseRange" min="0" max="1" step="0.01" value="0">
+      <label>
+        Статический шум
+        <input type="range" id="noiseRange" min="0" max="1" step="0.01" value="0" />
       </label>
-      <label>Сканлайны прозрачность
-        <input type="range" id="scanlineRange" min="0" max="1" step="0.01" value="0">
+      <label>
+        Сканлайны прозрачность
+        <input type="range" id="scanlineRange" min="0" max="1" step="0.01" value="0" />
       </label>
-      <label>Высота сканлайна
-        <input type="range" id="scanlineHeightRange" min="1" max="4" step="1" value="2">
+      <label>
+        Высота сканлайна
+        <input type="range" id="scanlineHeightRange" min="1" max="4" step="1" value="2" />
       </label>
-      <label>Хром. аберрация
-        <input type="range" id="chromaRange" min="0" max="10" step="0.1" value="0">
+      <label>
+        Хром. аберрация
+        <input type="range" id="chromaRange" min="0" max="10" step="0.1" value="0" />
       </label>
-      <label>Виньетка
-        <input type="range" id="vignetteRange" min="0" max="1" step="0.01" value="0">
+      <label>
+        Виньетка
+        <input type="range" id="vignetteRange" min="0" max="1" step="0.01" value="0" />
       </label>
-      <label>Искажение
-        <input type="range" id="distortRange" min="0" max="10" step="0.1" value="0">
+      <label>
+        Искажение
+        <input type="range" id="distortRange" min="0" max="10" step="0.1" value="0" />
       </label>
-      <label>Яркость
-        <input type="range" id="brightnessRange" min="0" max="2" step="0.01" value="1">
+      <label>
+        Яркость
+        <input type="range" id="brightnessRange" min="0" max="2" step="0.01" value="1" />
       </label>
-      <label>Контраст
-        <input type="range" id="contrastRange" min="0" max="3" step="0.01" value="1">
+      <label>
+        Контраст
+        <input type="range" id="contrastRange" min="0" max="3" step="0.01" value="1" />
       </label>
-      <label>Глитч-полосы
-        <input type="range" id="glitchIntensityRange" min="0" max="1" step="0.01" value="0">
+      <label>
+        Глитч-полосы
+        <input
+          type="range"
+          id="glitchIntensityRange"
+          min="0"
+          max="1"
+          step="0.01"
+          value="0"
+        />
       </label>
-      <label>Кол-во глитч-полос
-        <input type="range" id="glitchStripesRange" min="1" max="20" step="1" value="5">
+      <label>
+        Кол-во глитч-полос
+        <input
+          type="range"
+          id="glitchStripesRange"
+          min="1"
+          max="20"
+          step="1"
+          value="5"
+        />
       </label>
     </div>
     <button id="saveBtn">Сохранить изображение</button>
-    <button id="resetBtn" style="background:linear-gradient(95deg,#333b54,#142136)">Сбросить настройки</button>
-    <button id="sendBtn" style="background:linear-gradient(95deg,#28a745,#3ecf68);margin-top:10px;">Отправить в Telegram</button>
+    <button id="resetBtn" style="background: linear-gradient(95deg, #333b54, #142136)">
+      Сбросить настройки
+    </button>
+    <button id="sendBtn">Отправить в Telegram</button>
   </div>
   <script>
-    const upload = document.getElementById('upload');
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d', { willReadFrequently: true });
-    let img = new Image(), imageLoaded = false, lastFileName = 'crt-effect';
+    const upload = document.getElementById("upload");
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
+    let img = new Image(),
+      imageLoaded = false,
+      lastFileName = "crt-effect";
 
-    let noiseLevel = 0, scanlineLevel = 0, scanlineHeight = 2, chromaOffset = 0, vignetteLevel = 0, distortLevel = 0, brightnessLevel = 1, contrastLevel = 1, glitchIntensity = 0, glitchStripesCount = 5;
+    let noiseLevel = 0,
+      scanlineLevel = 0,
+      scanlineHeight = 2,
+      chromaOffset = 0,
+      vignetteLevel = 0,
+      distortLevel = 0,
+      brightnessLevel = 1,
+      contrastLevel = 1,
+      glitchIntensity = 0,
+      glitchStripesCount = 5;
+
     function setControlsDefaults() {
-      noiseLevel = 0;   scanlineLevel = 0; scanlineHeight = 2; chromaOffset = 0; vignetteLevel = 0; distortLevel = 0; brightnessLevel = 1; contrastLevel = 1; glitchIntensity = 0; glitchStripesCount = 5;
-      document.getElementById('noiseRange').value = noiseLevel;
-      document.getElementById('scanlineRange').value = scanlineLevel;
-      document.getElementById('scanlineHeightRange').value = scanlineHeight;
-      document.getElementById('chromaRange').value = chromaOffset;
-      document.getElementById('vignetteRange').value = vignetteLevel;
-      document.getElementById('distortRange').value = distortLevel;
-      document.getElementById('brightnessRange').value = brightnessLevel;
-      document.getElementById('contrastRange').value = contrastLevel;
-      document.getElementById('glitchIntensityRange').value = glitchIntensity;
-      document.getElementById('glitchStripesRange').value = glitchStripesCount;
+      noiseLevel = 0;
+      scanlineLevel = 0;
+      scanlineHeight = 2;
+      chromaOffset = 0;
+      vignetteLevel = 0;
+      distortLevel = 0;
+      brightnessLevel = 1;
+      contrastLevel = 1;
+      glitchIntensity = 0;
+      glitchStripesCount = 5;
+      document.getElementById("noiseRange").value = noiseLevel;
+      document.getElementById("scanlineRange").value = scanlineLevel;
+      document.getElementById("scanlineHeightRange").value = scanlineHeight;
+      document.getElementById("chromaRange").value = chromaOffset;
+      document.getElementById("vignetteRange").value = vignetteLevel;
+      document.getElementById("distortRange").value = distortLevel;
+      document.getElementById("brightnessRange").value = brightnessLevel;
+      document.getElementById("contrastRange").value = contrastLevel;
+      document.getElementById("glitchIntensityRange").value = glitchIntensity;
+      document.getElementById("glitchStripesRange").value = glitchStripesCount;
     }
-    upload.addEventListener('change', e => {
+
+    upload.addEventListener("change", (e) => {
       const file = e.target.files[0];
       if (!file) return;
-      lastFileName = file.name ? file.name.replace(/\.[^/.]+$/,"") : "crt-effect";
+      lastFileName = file.name ? file.name.replace(/\.[^/.]+$/, "") : "crt-effect";
       img = new Image();
       img.src = URL.createObjectURL(file);
-      img.onload = () => { canvas.width=img.width; canvas.height=img.height; imageLoaded=true; drawEffect();};
+      img.onload = () => {
+        canvas.width = img.width;
+        canvas.height = img.height;
+        imageLoaded = true;
+        drawEffect();
+      };
     });
 
     [
-      ['noiseRange', val => noiseLevel = val],
-      ['scanlineRange', val => scanlineLevel = val],
-      ['scanlineHeightRange', val => scanlineHeight = parseInt(val, 10)],
-      ['chromaRange', val => chromaOffset = val],
-      ['vignetteRange', val => vignetteLevel = val],
-      ['distortRange', val => distortLevel = val],
-      ['brightnessRange', val => brightnessLevel = val],
-      ['contrastRange', val => contrastLevel = val],
-      ['glitchIntensityRange', val => glitchIntensity = val],
-      ['glitchStripesRange', val => glitchStripesCount = parseInt(val, 10)]
+      ["noiseRange", (val) => (noiseLevel = val)],
+      ["scanlineRange", (val) => (scanlineLevel = val)],
+      ["scanlineHeightRange", (val) => (scanlineHeight = parseInt(val, 10))],
+      ["chromaRange", (val) => (chromaOffset = val)],
+      ["vignetteRange", (val) => (vignetteLevel = val)],
+      ["distortRange", (val) => (distortLevel = val)],
+      ["brightnessRange", (val) => (brightnessLevel = val)],
+      ["contrastRange", (val) => (contrastLevel = val)],
+      ["glitchIntensityRange", (val) => (glitchIntensity = val)],
+      ["glitchStripesRange", (val) => (glitchStripesCount = parseInt(val, 10))],
     ].forEach(([id, setter]) => {
-      document.getElementById(id).addEventListener('input', e => { setter(parseFloat(e.target.value)); drawEffect(); });
+      document
+        .getElementById(id)
+        .addEventListener("input", (e) => {
+          setter(parseFloat(e.target.value));
+          drawEffect();
+        });
       const r = document.getElementById(id);
-      r.addEventListener('touchstart', ev => ev.stopPropagation(), {passive:true});
-      r.addEventListener('touchmove', ev => ev.stopPropagation(), {passive:true});
-      r.addEventListener('touchend', ev => ev.stopPropagation(), {passive:true});
+      r.addEventListener(
+        "touchstart",
+        (ev) => ev.stopPropagation(),
+        { passive: true }
+      );
+      r.addEventListener(
+        "touchmove",
+        (ev) => ev.stopPropagation(),
+        { passive: true }
+      );
+      r.addEventListener(
+        "touchend",
+        (ev) => ev.stopPropagation(),
+        { passive: true }
+      );
     });
 
     function drawVignette(ctx, w, h, l) {
       if (l <= 0) return;
-      const g = ctx.createRadialGradient(w/2, h/2, w/2*0.4, w/2, h/2, w/2);
-      g.addColorStop(0, 'rgba(0,0,0,0)');
+      const g = ctx.createRadialGradient(w / 2, h / 2, (w / 2) * 0.4, w / 2, h / 2, w / 2);
+      g.addColorStop(0, "rgba(0,0,0,0)");
       g.addColorStop(1, `rgba(0,0,0,${l})`);
       ctx.fillStyle = g;
-      ctx.fillRect(0,0,w,h);
+      ctx.fillRect(0, 0, w, h);
     }
     function applyDistortion(imgD, lvl) {
       if (lvl <= 0) return imgD;
-      const w=imgD.width, h=imgD.height, d=imgD.data, t = new Uint8ClampedArray(d.length); t.set(d);
-      for(let y=0;y<h;y++){ let sh=Math.round(lvl*Math.sin((y/10)*Math.PI)); for(let x=0;x<w;x++){
-        let i1=(y*w+x)*4, sx=x+sh; sx=sx<0?0:sx>=w?w-1:sx; let i2=(y*w+sx)*4;
-        d[i1]=t[i2];d[i1+1]=t[i2+1];d[i1+2]=t[i2+2];d[i1+3]=t[i2+3];
-      }} return imgD;
-    }
-    function applyChromaAberration(imgD, off){ if(off===0)return imgD;
-      const w=imgD.width,h=imgD.height,d=imgD.data,red=new Uint8ClampedArray(d.length),blue=new Uint8ClampedArray(d.length);
-      for(let y=0;y<h;y++)for(let x=0;x<w;x++){
-        let i=(y*w+x)*4,rx=Math.max(0,x-off),rix=(y*w+rx)*4,bx=Math.min(w-1,x+off),bix=(y*w+bx)*4;
-        red[i]=d[rix];red[i+1]=0;red[i+2]=0;red[i+3]=d[i+3]; blue[i]=0;blue[i+1]=0;blue[i+2]=d[bix+2];blue[i+3]=d[i+3];
+      const w = imgD.width,
+        h = imgD.height,
+        d = imgD.data,
+        t = new Uint8ClampedArray(d.length);
+      t.set(d);
+      for (let y = 0; y < h; y++) {
+        let sh = Math.round(lvl * Math.sin((y / 10) * Math.PI));
+        for (let x = 0; x < w; x++) {
+          let i1 = (y * w + x) * 4,
+            sx = x + sh;
+          sx = sx < 0 ? 0 : sx >= w ? w - 1 : sx;
+          let i2 = (y * w + sx) * 4;
+          d[i1] = t[i2];
+          d[i1 + 1] = t[i2 + 1];
+          d[i1 + 2] = t[i2 + 2];
+          d[i1 + 3] = t[i2 + 3];
+        }
       }
-      for(let i=0;i<d.length;i+=4){if(d[i+3]===0)continue;d[i]=red[i];d[i+1]=d[i+1]*0.9;d[i+2]=blue[i+2];}
       return imgD;
     }
-    function applyBrightnessContrast(imgD, br, ct){
-      if(br===1&&ct===1)return imgD;
-      const d=imgD.data,f=(259*(ct*255+255))/(255*(259-ct*255));
-      for(let i=0;i<d.length;i+=4) for(let c=0;c<3;c++){
-        let v=d[i+c]*br; v=f*(v-128)+128; d[i+c]=Math.min(255,Math.max(0,v));
-      } return imgD;
+    function applyChromaAberration(imgD, off) {
+      if (off === 0) return imgD;
+      const w = imgD.width,
+        h = imgD.height,
+        d = imgD.data,
+        red = new Uint8ClampedArray(d.length),
+        blue = new Uint8ClampedArray(d.length);
+      for (let y = 0; y < h; y++)
+        for (let x = 0; x < w; x++) {
+          let i = (y * w + x) * 4,
+            rx = Math.max(0, x - off),
+            rix = (y * w + rx) * 4,
+            bx = Math.min(w - 1, x + off),
+            bix = (y * w + bx) * 4;
+          red[i] = d[rix];
+          red[i + 1] = 0;
+          red[i + 2] = 0;
+          red[i + 3] = d[i + 3];
+          blue[i] = 0;
+          blue[i + 1] = 0;
+          blue[i + 2] = d[bix + 2];
+          blue[i + 3] = d[i + 3];
+        }
+      for (let i = 0; i < d.length; i += 4) {
+        if (d[i + 3] === 0) continue;
+        d[i] = red[i];
+        d[i + 1] = d[i + 1] * 0.9;
+        d[i + 2] = blue[i + 2];
+      }
+      return imgD;
     }
-    function drawScanlines(ctx,w,h,op,lineH){
-      if(op<=0)return;
-      ctx.fillStyle=`rgba(0,0,0,${op*0.3})`;
-      for(let y=0;y<h;y+=lineH*2) ctx.fillRect(0,y,w,lineH);
+    function applyBrightnessContrast(imgD, br, ct) {
+      if (br === 1 && ct === 1) return imgD;
+      const d = imgD.data,
+        f = (259 * (ct * 255 + 255)) / (255 * (259 - ct * 255));
+      for (let i = 0; i < d.length; i += 4)
+        for (let c = 0; c < 3; c++) {
+          let v = d[i + c] * br;
+          v = f * (v - 128) + 128;
+          d[i + c] = Math.min(255, Math.max(0, v));
+        }
+      return imgD;
     }
-    function drawGlitchStripes(ctx,w,h,count,intensity){
-      if(intensity<=0)return;
-      const stripeHeight = Math.max(2, Math.floor(h/(count*2)));
+    function drawScanlines(ctx, w, h, op, lineH) {
+      if (op <= 0) return;
+      ctx.fillStyle = `rgba(0,0,0,${op * 0.3})`;
+      for (let y = 0; y < h; y += lineH * 2) ctx.fillRect(0, y, w, lineH);
+    }
+    function drawGlitchStripes(ctx, w, h, count, intensity) {
+      if (intensity <= 0) return;
+      const stripeHeight = Math.max(2, Math.floor(h / (count * 2)));
       ctx.save();
-      for(let i=0;i<count;i++){
-        let y = Math.floor(Math.random()*(h-stripeHeight));
+      for (let i = 0; i < count; i++) {
+        let y = Math.floor(Math.random() * (h - stripeHeight));
         let x1 = 0;
-        while(x1<w){
-          let segW = Math.floor(20+Math.random()*w*0.15);
-          let cutoff = Math.floor(Math.random()*stripeHeight*0.9);
-          ctx.globalAlpha = 0.16 + 0.5*intensity;
-          ctx.fillStyle = 'rgba(255,255,255,0.26)';
-          ctx.fillRect(x1,y+cutoff,Math.min(segW,w-x1),stripeHeight-cutoff);
-          x1 += segW + Math.floor(Math.random()*14);
+        while (x1 < w) {
+          let segW = Math.floor(20 + Math.random() * w * 0.15);
+          let cutoff = Math.floor(Math.random() * stripeHeight * 0.9);
+          ctx.globalAlpha = 0.16 + 0.5 * intensity;
+          ctx.fillStyle = "rgba(255,255,255,0.26)";
+          ctx.fillRect(x1, y + cutoff, Math.min(segW, w - x1), stripeHeight - cutoff);
+          x1 += segW + Math.floor(Math.random() * 14);
         }
       }
       ctx.globalAlpha = 1.0;
       ctx.restore();
     }
     function drawEffect() {
-      if (!imageLoaded) { ctx.clearRect(0,0,canvas.width,canvas.height); return;}
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-      ctx.drawImage(img,0,0);
-      let imageData = ctx.getImageData(0,0,canvas.width,canvas.height);
-      imageData = applyChromaAberration(imageData,Math.round(chromaOffset));
-      imageData = applyDistortion(imageData,distortLevel);
-      if(noiseLevel>0){
-        const d=imageData.data;
-        for(let i=0;i<d.length;i+=4){
-          const rand = (Math.random()-0.5)*255*noiseLevel;
-          d[i]=Math.min(255,Math.max(0,d[i]+rand));
-          d[i+1]=Math.min(255,Math.max(0,d[i+1]+rand));
-          d[i+2]=Math.min(255,Math.max(0,d[i+2]+rand));
+      if (!imageLoaded) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        return;
+      }
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0);
+      let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      imageData = applyChromaAberration(imageData, Math.round(chromaOffset));
+      imageData = applyDistortion(imageData, distortLevel);
+      if (noiseLevel > 0) {
+        const d = imageData.data;
+        for (let i = 0; i < d.length; i += 4) {
+          const rand = (Math.random() - 0.5) * 255 * noiseLevel;
+          d[i] = Math.min(255, Math.max(0, d[i] + rand));
+          d[i + 1] = Math.min(255, Math.max(0, d[i + 1] + rand));
+          d[i + 2] = Math.min(255, Math.max(0, d[i + 2] + rand));
         }
       }
-      imageData=applyBrightnessContrast(imageData,brightnessLevel,contrastLevel);
-      ctx.putImageData(imageData,0,0);
-      drawScanlines(ctx,canvas.width,canvas.height,scanlineLevel,scanlineHeight);
-      drawVignette(ctx,canvas.width,canvas.height,vignetteLevel);
-      drawGlitchStripes(ctx,canvas.width,canvas.height,glitchStripesCount,glitchIntensity);
+      imageData = applyBrightnessContrast(imageData, brightnessLevel, contrastLevel);
+      ctx.putImageData(imageData, 0, 0);
+      drawScanlines(ctx, canvas.width, canvas.height, scanlineLevel, scanlineHeight);
+      drawVignette(ctx, canvas.width, canvas.height, vignetteLevel);
+      drawGlitchStripes(ctx, canvas.width, canvas.height, glitchStripesCount, glitchIntensity);
     }
 
-    document.getElementById('saveBtn').addEventListener('click', () => {
-      if (!imageLoaded) { alert("Сначала загрузите изображение."); return;}
-      let fileBase = lastFileName.replace(/[^a-zA-Zа-яА-Я0-9_\-]/g,'') || "crt-effect";
+    document.getElementById("saveBtn").addEventListener("click", () => {
+      if (!imageLoaded) {
+        alert("Сначала загрузите изображение.");
+        return;
+      }
+      let fileBase = lastFileName.replace(/[^a-zA-Zа-яА-Я0-9_\-]/g, "") || "crt-effect";
       let resultFile = fileBase + "_crt.png";
-      canvas.toBlob(blob => {
-        if(!blob){alert("Ошибка сохранения.");return;}
-        const url=URL.createObjectURL(blob), link=document.createElement('a');
-        link.href=url; link.download=resultFile; document.body.appendChild(link); link.click();
-        document.body.removeChild(link); URL.revokeObjectURL(url);
-      }, 'image/png');
+      canvas.toBlob((blob) => {
+        if (!blob) {
+          alert("Ошибка сохранения.");
+          return;
+        }
+        const url = URL.createObjectURL(blob),
+          link = document.createElement("a");
+        link.href = url;
+        link.download = resultFile;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }, "image/png");
     });
-    document.getElementById('resetBtn').addEventListener('click', () => {
+
+    document.getElementById("resetBtn").addEventListener("click", () => {
       setControlsDefaults();
       drawEffect();
     });
 
-    // Отправка картинки на сервер Telegram бота
-    document.getElementById('sendBtn').addEventListener('click', () => {
-      if (!imageLoaded) { alert("Сначала загрузите изображение."); return; }
+    document.getElementById("sendBtn").addEventListener("click", () => {
+      if (!imageLoaded) {
+        alert("Сначала загрузите изображение.");
+        return;
+      }
 
-      // TODO: Получить chat_id пользователя из внешнего контекста Telegram MiniApp
-      const chatId = prompt("Введите chat_id для отправки (можно получить из вашего бота)");
+      // Получение chat_id автоматически из Telegram Mini App SDK
+      const chatId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
+      if (!chatId) {
+        alert("Не удалось получить chat_id из Telegram. Убедитесь, что приложение запущено через Telegram.");
+        return;
+      }
 
-      canvas.toBlob(blob => {
-        if (!blob) { alert("Ошибка при формировании изображения."); return; }
+      canvas.toBlob((blob) => {
+        if (!blob) {
+          alert("Ошибка при формировании изображения.");
+          return;
+        }
         const reader = new FileReader();
         reader.onloadend = () => {
           const base64data = reader.result;
 
-          // Отправляем на сервер POST запрос с chat_id и base64 изображения
-          fetch('https://tv-eta-henna.vercel.app/send_image', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+          // Отправляем на сервер POST-запрос с chat_id и изображением в base64
+          fetch("https://cycdwnld.vercel.app/send_image", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
             body: JSON.stringify({
               chat_id: chatId,
-              // Используем data URL, сервер должен уметь принимать такой формат (если нет — можно модифицировать сервер)
-              image_url: base64data
+              image_url: base64data,
             }),
-          }).then(res => res.json())
-            .then(data => {
+          })
+            .then((res) => res.json())
+            .then((data) => {
               if (data.status === "success") alert("Изображение успешно отправлено!");
               else alert("Ошибка отправки: " + data.message);
-            }).catch(err => {
+            })
+            .catch((err) => {
               alert("Ошибка сети: " + err.message);
             });
         };
         reader.readAsDataURL(blob);
-      }, 'image/png');
+      }, "image/png");
     });
 
     setControlsDefaults();
 
-    document.querySelectorAll('input[type="range"]').forEach(slider=>{
-      slider.addEventListener('touchmove',e=>e.stopPropagation(),{passive:true});
-      slider.addEventListener('touchstart',e=>e.stopPropagation(),{passive:true});
+    document.querySelectorAll("input[type=range]").forEach((slider) => {
+      slider.addEventListener(
+        "touchmove",
+        (e) => e.stopPropagation(),
+        { passive: true }
+      );
+      slider.addEventListener(
+        "touchstart",
+        (e) => e.stopPropagation(),
+        { passive: true }
+      );
     });
   </script>
 </body>

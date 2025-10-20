@@ -28,6 +28,7 @@
     <input type="file" accept="image/*" id="upload">
     <canvas id="canvas" width="400" height="300"></canvas>
     <div class="controls" id="ctrls">
+      <!-- Ползунки управления эффектами -->
       <label>Статический шум
         <input type="range" id="noiseRange" min="0" max="1" step="0.01" value="0">
       </label>
@@ -61,6 +62,7 @@
     </div>
     <button id="saveBtn">Сохранить изображение</button>
     <button id="resetBtn" style="background:linear-gradient(95deg,#333b54,#142136)">Сбросить настройки</button>
+    <button id="sendBtn" style="background:linear-gradient(95deg,#28a745,#3ecf68);margin-top:10px;">Отправить в Telegram</button>
   </div>
   <script>
     const upload = document.getElementById('upload');
@@ -104,7 +106,6 @@
       ['glitchStripesRange', val => glitchStripesCount = parseInt(val, 10)]
     ].forEach(([id, setter]) => {
       document.getElementById(id).addEventListener('input', e => { setter(parseFloat(e.target.value)); drawEffect(); });
-      // Блокировка активации ползунка при свайпах
       const r = document.getElementById(id);
       r.addEventListener('touchstart', ev => ev.stopPropagation(), {passive:true});
       r.addEventListener('touchmove', ev => ev.stopPropagation(), {passive:true});
@@ -148,7 +149,6 @@
       ctx.fillStyle=`rgba(0,0,0,${op*0.3})`;
       for(let y=0;y<h;y+=lineH*2) ctx.fillRect(0,y,w,lineH);
     }
-    // Классические глитч-полосы: тонкие, рваные
     function drawGlitchStripes(ctx,w,h,count,intensity){
       if(intensity<=0)return;
       const stripeHeight = Math.max(2, Math.floor(h/(count*2)));
@@ -190,6 +190,7 @@
       drawVignette(ctx,canvas.width,canvas.height,vignetteLevel);
       drawGlitchStripes(ctx,canvas.width,canvas.height,glitchStripesCount,glitchIntensity);
     }
+
     document.getElementById('saveBtn').addEventListener('click', () => {
       if (!imageLoaded) { alert("Сначала загрузите изображение."); return;}
       let fileBase = lastFileName.replace(/[^a-zA-Zа-яА-Я0-9_\-]/g,'') || "crt-effect";
@@ -205,9 +206,43 @@
       setControlsDefaults();
       drawEffect();
     });
+
+    // Отправка картинки на сервер Telegram бота
+    document.getElementById('sendBtn').addEventListener('click', () => {
+      if (!imageLoaded) { alert("Сначала загрузите изображение."); return; }
+
+      // TODO: Получить chat_id пользователя из внешнего контекста Telegram MiniApp
+      const chatId = prompt("Введите chat_id для отправки (можно получить из вашего бота)");
+
+      canvas.toBlob(blob => {
+        if (!blob) { alert("Ошибка при формировании изображения."); return; }
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const base64data = reader.result;
+
+          // Отправляем на сервер POST запрос с chat_id и base64 изображения
+          fetch('https://tv-eta-henna.vercel.app/send_image', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              chat_id: chatId,
+              // Используем data URL, сервер должен уметь принимать такой формат (если нет — можно модифицировать сервер)
+              image_url: base64data
+            }),
+          }).then(res => res.json())
+            .then(data => {
+              if (data.status === "success") alert("Изображение успешно отправлено!");
+              else alert("Ошибка отправки: " + data.message);
+            }).catch(err => {
+              alert("Ошибка сети: " + err.message);
+            });
+        };
+        reader.readAsDataURL(blob);
+      }, 'image/png');
+    });
+
     setControlsDefaults();
 
-    // Блокировка активации ползунка при случайном свайпе (только прямое касание)
     document.querySelectorAll('input[type="range"]').forEach(slider=>{
       slider.addEventListener('touchmove',e=>e.stopPropagation(),{passive:true});
       slider.addEventListener('touchstart',e=>e.stopPropagation(),{passive:true});
